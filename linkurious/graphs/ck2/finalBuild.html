@@ -1,0 +1,308 @@
+<!-- START SIGMA IMPORTS -->
+<script src="../../src/sigma.core.js"></script>
+<script src="../../src/conrad.js"></script>
+<script src="../../src/utils/sigma.utils.js"></script>
+<script src="../../src/utils/sigma.polyfills.js"></script>
+<script src="../../src/sigma.settings.js"></script>
+<script src="../../src/classes/sigma.classes.dispatcher.js"></script>
+<script src="../../src/classes/sigma.classes.configurable.js"></script>
+<script src="../../src/classes/sigma.classes.graph.js"></script>
+<script src="../../src/classes/sigma.classes.camera.js"></script>
+<script src="../../src/classes/sigma.classes.quad.js"></script>
+<script src="../../src/captors/sigma.captors.mouse.js"></script>
+<script src="../../src/captors/sigma.captors.touch.js"></script>
+<script src="../../src/renderers/sigma.renderers.canvas.js"></script>
+<script src="../../src/renderers/sigma.renderers.webgl.js"></script>
+<script src="../../src/renderers/sigma.renderers.svg.js"></script>
+<script src="../../src/renderers/sigma.renderers.def.js"></script>
+<script src="../../src/renderers/webgl/sigma.webgl.nodes.def.js"></script>
+<script src="../../src/renderers/webgl/sigma.webgl.nodes.fast.js"></script>
+<script src="../../src/renderers/webgl/sigma.webgl.edges.def.js"></script>
+<script src="../../src/renderers/webgl/sigma.webgl.edges.fast.js"></script>
+<script src="../../src/renderers/webgl/sigma.webgl.edges.arrow.js"></script>
+<script src="../../src/renderers/canvas/sigma.canvas.labels.def.js"></script>
+<script src="../../src/renderers/canvas/sigma.canvas.hovers.def.js"></script>
+<script src="../../src/renderers/canvas/sigma.canvas.nodes.def.js"></script>
+<script src="../../src/renderers/canvas/sigma.canvas.edges.def.js"></script>
+<script src="../../src/renderers/canvas/sigma.canvas.edges.curve.js"></script>
+<script src="../../src/renderers/canvas/sigma.canvas.edges.arrow.js"></script>
+<script src="../../src/renderers/canvas/sigma.canvas.edges.curvedArrow.js"></script>
+<script src="../../src/renderers/canvas/sigma.canvas.edgehovers.def.js"></script>
+<script src="../../src/renderers/canvas/sigma.canvas.edgehovers.curve.js"></script>
+<script src="../../src/renderers/canvas/sigma.canvas.edgehovers.arrow.js"></script>
+<script src="../../src/renderers/canvas/sigma.canvas.edgehovers.curvedArrow.js"></script>
+<script src="../../src/renderers/canvas/sigma.canvas.extremities.def.js"></script>
+<script src="../../src/renderers/svg/sigma.svg.utils.js"></script>
+<script src="../../src/renderers/svg/sigma.svg.nodes.def.js"></script>
+<script src="../../src/renderers/svg/sigma.svg.edges.def.js"></script>
+<script src="../../src/renderers/svg/sigma.svg.edges.curve.js"></script>
+<script src="../../src/renderers/svg/sigma.svg.edges.curvedArrow.js"></script>
+<script src="../../src/renderers/svg/sigma.svg.labels.def.js"></script>
+<script src="../../src/renderers/svg/sigma.svg.hovers.def.js"></script>
+<script src="../../src/middlewares/sigma.middlewares.rescale.js"></script>
+<script src="../../src/middlewares/sigma.middlewares.copy.js"></script>
+<script src="../../src/misc/sigma.misc.animation.js"></script>
+<script src="../../src/misc/sigma.misc.bindEvents.js"></script>
+<script src="../../src/misc/sigma.misc.bindDOMEvents.js"></script>
+<script src="../../src/misc/sigma.misc.drawHovers.js"></script>
+<!-- END SIGMA IMPORTS -->
+<script src="../../plugins/sigma.plugins.tooltips/sigma.plugins.tooltips.js"></script>
+<script src="../../mustache/mustache.min.js"></script>
+<script src="../../plugins/sigma.parsers.gexf/gexf-parser.js"></script>
+<script src="../../plugins/sigma.parsers.gexf/sigma.parsers.gexf.js"></script>
+<div id="container">
+  <style>
+    #graph-container {
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      position: absolute;
+	  background-color : black;
+    }
+
+    .sigma-tooltip {
+      max-width: 240px;
+      max-height: 280px;
+      background-color: rgb(249, 247, 237);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      border-radius: 6px;
+    }
+
+    .sigma-tooltip-header {
+      font-variant: small-caps;
+      font-size: 120%;
+      color: #437356;
+      border-bottom: 1px solid #aac789;
+      padding: 10px;
+    }
+
+    .sigma-tooltip-body {
+      padding: 10px;
+    }
+
+    .sigma-tooltip-body th {
+      color: #999;
+      text-align: left;
+    }
+
+    .sigma-tooltip-footer {
+      padding: 10px;
+      border-top: 1px solid #aac789;
+    }
+
+    .sigma-tooltip > .arrow {
+      border-width: 10px;
+      position: absolute;
+      display: block;
+      width: 0;
+      height: 0;
+      border-color: transparent;
+      border-style: solid;
+    }
+
+    .sigma-tooltip.top {
+      margin-top: -12px;
+    }
+    .sigma-tooltip.top > .arrow {
+      left: 50%;
+      bottom: -10px;
+      margin-left: -10px;
+      border-top-color: rgb(249, 247, 237);
+      border-bottom-width: 0;
+    }
+
+    .sigma-tooltip.bottom {
+      margin-top: 12px;
+    }
+    .sigma-tooltip.bottom > .arrow {
+      left: 50%;
+      top: -10px;
+      margin-left: -10px;
+      border-bottom-color: rgb(249, 247, 237);
+      border-top-width: 0;
+    }
+
+    .sigma-tooltip.left {
+      margin-left: -12px;
+    }
+    .sigma-tooltip.left > .arrow {
+      top: 50%;
+      right: -10px;
+      margin-top: -10px;
+      border-left-color: rgb(249, 247, 237);
+      border-right-width: 0;
+    }
+
+    .sigma-tooltip.right {
+      margin-left: 12px;
+    }
+    .sigma-tooltip.right > .arrow {
+      top: 50%;
+      left: -10px;
+      margin-top: -10px;
+      border-right-color: rgb(249, 247, 237);
+      border-left-width: 0;
+    }
+
+  </style>
+  <div id="graph-container"></div>
+</div>
+<script>
+  // Add a method to the graph model that returns an
+  // object with every neighbors of a node inside:
+sigma.classes.graph.addMethod('neighbors', function(nodeId) {
+        var i,
+            neighbors = {},
+            index = this.allNeighborsIndex.get(nodeId).keyList() || {};
+            for (i = 0; i < index.length; i++) {
+                neighbors[index[i]] = this.nodesIndex.get(index[i]);
+            }
+        return neighbors;
+});
+
+s = new sigma({
+renderer:{
+container: document.getElementById('graph-container'),
+type: 'canvas'
+},
+settings : {
+maxEdgeSize : 2,
+minNodeSize : .5,
+maxNodeSize : 10
+
+}
+});
+
+
+sigma.parsers.gexf('RoyalMarriageTitled.gexf', s, function(){
+
+	  s.graph.nodes().forEach(function(n) {
+        n.originalColor = n.color;
+      });
+      s.graph.edges().forEach(function(e) {
+        e.originalColor = e.color,
+		e.type = "curve";
+      });
+
+      // When a node is clicked, we check for each node
+      // if it is a neighbor of the clicked one. If not,
+      // we set its color as grey, and else, it takes its
+      // original color.
+      // We do the same for the edges, and we only keep
+      // edges that have both extremities colored.
+      s.bind('clickNode', function(e) {
+        var nodeId = e.data.node.id,
+            toKeep = s.graph.neighbors(nodeId);
+        toKeep[nodeId] = e.data.node;
+
+        s.graph.nodes().forEach(function(n) {
+          if (toKeep[n.id])
+            n.color = n.originalColor;
+          else
+            n.color = '#171717';
+        });
+
+        s.graph.edges().forEach(function(e) {
+          if (toKeep[e.source] && toKeep[e.target])
+            e.color = e.originalColor,
+			e.type = "curve";
+          else
+            e.color = '#171717',
+			e.type = "curve";
+        });
+
+        // Since the data has been modified, we need to
+        // call the refresh method to make the colors
+        // update effective.
+        s.refresh();
+      });
+
+      // When the stage is clicked, we just color each
+      // node and edge with its original color.
+      s.bind('clickStage', function(e) {
+        s.graph.nodes().forEach(function(n) {
+          n.color = n.originalColor;
+        });
+
+        s.graph.edges().forEach(function(e) {
+          e.color = e.originalColor,
+		  e.type = "curve";
+        });
+
+        // Same as in the previous event:
+        s.refresh();
+      });
+
+// Set the drawLabels setting to false
+s.settings({drawLabels: false});
+
+s.settings({borderSize : 2});
+
+s.settings({zoomMax : 1});
+
+s.refresh();
+
+});
+
+
+/* Minimal example of the tooltip plugin instantiation:
+sigma.plugins.tooltips(s, s.renderers[0], {
+  node: {
+    template: 'Hello node!'
+  }
+});
+*/
+var config = {
+  node: [{  
+    show: 'hovers',
+    hide: 'hovers',
+    cssClass: 'sigma-tooltip',
+    position: 'top',
+    //autoadjust: true,
+    template:
+    '<div class="arrow"></div>' +
+    ' <div class="sigma-tooltip-header">{{label}}</div>' +
+    '  <div class="sigma-tooltip-body">' +
+    '    <table>' +
+    '      <tr><th>Culture:</th> <td>{{culture}}</td></tr>' +
+    '      <tr><th>Religion:</th> <td>{{religion}}</td></tr>' +
+    '    </table>' +
+    '  </div>',
+    renderer: function(node, template) {
+      // The function context is s.graph
+	  node.religion = node.attributes.d2;
+	  node.culture = node.attributes.d1;
+	  
+
+      // Returns an HTML string:
+      return Mustache.render(template, node);
+
+      // Returns a DOM Element:
+      //var el = document.createElement('div');
+      //return el.innerHTML = Mustache.render(template, node);
+    }
+  }]
+};
+
+// Instanciate the tooltips plugin with a Mustache renderer for node tooltips:
+var tooltips = sigma.plugins.tooltips(s, s.renderers[0], config);
+
+
+// Manually open a tooltip on a node:
+var n = s.graph.nodes('n10');
+var prefix = s.renderers[0].camera.prefix;
+tooltips.open(n, config.node[0], n[prefix + 'x'], n[prefix + 'y']);
+
+
+tooltips.bind('shown', function(event) {
+  console.log('tooltip shown', event);
+});
+
+tooltips.bind('hidden', function(event) {
+  console.log('tooltip hidden', event);
+});
+
+
+
+</script>
