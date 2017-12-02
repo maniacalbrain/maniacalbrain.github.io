@@ -2,7 +2,7 @@
 <head>
 <title>Royal Marriage Graph - Titled - An Quant Ar Buile</title>
 
-<meta property="og:title" content="A Look at the Treaty Debates">
+<meta property="og:title" content="Final Build of CK2 Social Networks.">
 <meta property="og:type" content="article" >
 <meta property="og:site_name" content="an quant ar buile">
 <meta property="og:url" content="http://www.anquantarbuile.com/treaty-debates">
@@ -216,7 +216,7 @@
   <div id="graph-container"></div>
   
     <div id="description-button">
-	<button class="w3-button w3-black w3-xlarge" onclick="w3_open()">?</button>
+	<button class="w3-button w3-circle w3-teal w3-xlarge" onclick="w3_open()">?</button>
 	</div>
   
 </div>
@@ -254,7 +254,7 @@ maxNodeSize : 10
 });
 
 
-sigma.parsers.gexf('gexf/RoyalMarriageGraphTitled.gexf', s, function(){
+sigma.parsers.gexf('gexf/BattleNetworkReligion.gexf', s, function(){
 
 	  s.graph.nodes().forEach(function(n) {
         n.originalColor = n.color;
